@@ -61,10 +61,10 @@
       var renderGif = _giphy => {
         // Set gif as bg image
         $gif_wrap.css({
-          "background-image": 'url("' + _giphy.embed_url + '")'
+          "background-image": 'url("' + _giphy.images.original.url + '")'
         });
 
-        $('meta[name=og]').attr('content', _giphy.embed_url);
+        $('meta[name=og]').attr('content', _giphy.images.preview_gif.url);
 
         // Start duration countdown
         refreshRate();
