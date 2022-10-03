@@ -59,6 +59,7 @@
 
       // Display Gif in gif wrap container
       var renderGif = _giphy => {
+        console.log("URL: " +  _giphy.image_original_url);
         // Set gif as bg image
         $gif_wrap.css({
           "background-image": 'url("' + _giphy.image_original_url + '")'
