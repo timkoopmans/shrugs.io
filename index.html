@@ -1,88 +1,66 @@
 <!DOCTYPE html>
 <html lang='en' class=''>
-
 <head>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
   <meta property="og:image" content="https://media1.giphy.com/media/9xlBB84INr4GAymLqq/giphy.gif" />
   <meta property="og:title" content="¯\_(ツ)_/¯" data-dynamic="true">
   <meta property="og:description" content="dunno" data-dynamic="true">
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css'>
-  <style class="cp-pen-styles">
-    #gif-wrap {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      margin: auto;
-      background-color: #000;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+  <style>
+    html {
+      margin: 0;
+      height: 100%;
+      background: #000 center/contain no-repeat;
     }
   </style>
 </head>
-
 <body>
+  <script>
+    // Duration count in seconds
+    const duration = 1000 * 10;
+    // Giphy API defaults
+    const giphy = {
+      baseURL: "https://api.giphy.com/v1/gifs/",
+      key: "gG6AUEWy29wJxlU9388aTnNoDv6Jzm02",
+      tag: "shrug",
+      type: "random",
+      rating: "pg-13"
+    };
 
-  <div id="gif-wrap"></div>
-  <script>$(document).ready(function () {
-      // Initiate gifLoop for set interval
-      var refresh;
-      // Duration count in seconds
-      const duration = 1000 * 10;
-      // Giphy API defaults
-      const giphy = {
-        baseURL: "https://api.giphy.com/v1/gifs/",
-        key: "gG6AUEWy29wJxlU9388aTnNoDv6Jzm02",
-        tag: "shrug",
-        type: "random",
-        rating: "pg-13"
-      };
+    // Target gif-wrap container
+    const containerEl = document.documentElement;
+    const ogImageMeta = document.querySelector("meta[property='og:image']");
 
-      // Target gif-wrap container
-      const $gif_wrap = $("#gif-wrap");
-      // Giphy API URL
-      let giphyURL = encodeURI(
-        giphy.baseURL +
-        giphy.type +
-        "?api_key=" +
-        giphy.key +
-        "&tag=" +
-        giphy.tag +
-        "&rating=" +
-        giphy.rating);
+    // Giphy API URL
+    let giphyURL = encodeURI(
+      giphy.baseURL +
+      giphy.type +
+      "?api_key=" +
+      giphy.key +
+      "&tag=" +
+      giphy.tag +
+      "&rating=" +
+      giphy.rating);
 
 
-      // Call Giphy API and render data
-      var newGif = () => $.getJSON(giphyURL, json => renderGif(json.data));
+    // Call Giphy API and render data
+    async function newGif() {
+      const res = await fetch(giphyURL);
+      const { data } = await res.json();
 
-      // Display Gif in gif wrap container
-      var renderGif = _giphy => {
+      // Pre-load the image before setting as background (keep showing the last image while the next one loads)
+      const img = new Image();
+      img.src = data.images.original.url;
+      img.onload = () => {
         // Set gif as bg image
-        $gif_wrap.css({
-          "background-image": 'url("' + _giphy.images.original.url + '")'
-        });
+        containerEl.style.backgroundImage = `url(${img.src})`;
+        ogImageMeta.setAttribute("content", data.images.preview_gif.url);
 
-        $('meta[name=og]').attr('content', _giphy.images.preview_gif.url);
+        // Call for new gif after duration
+        window.setTimeout(newGif, duration);
+      }
+    }
 
-        // Start duration countdown
-        refreshRate();
-      };
-
-      // Call for new gif after duration
-      var refreshRate = () => {
-        // Reset set intervals
-        clearInterval(refresh);
-        refresh = setInterval(function () {
-          // Call Giphy API for new gif
-          newGif();
-        }, duration);
-      };
-
-      // Call Giphy API for new gif
-      newGif();
-    });
+    // Call Giphy API for new gif
+    newGif();
   </script>
 </body>
 
